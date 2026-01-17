@@ -2,11 +2,9 @@ import { Internship } from './internship.model';
 
 export interface Report {
   id: number;
-  title: string;
-  content: string;
-  submittedAt: Date;
   internship: Internship;
-  feedback?: string;
+  filePath: string;
+  uploadedAt: Date;
   grade?: number;
-  createdAt?: Date;
+  feedback?: string;
 }

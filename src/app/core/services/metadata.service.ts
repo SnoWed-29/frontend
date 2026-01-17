@@ -18,4 +18,8 @@ export class MetadataService {
   getSectors(): Observable<Sector[]> {
     return this.http.get<Sector[]>(`${this.API_URL}/sectors`);
   }
+
+  getSectorsByLevel(levelId: number): Observable<Sector[]> {
+    return this.http.get<Sector[]>(`${this.API_URL}/sectors/level/${levelId}`);
+  }
 }

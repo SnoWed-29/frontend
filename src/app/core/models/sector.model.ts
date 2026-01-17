@@ -1,13 +1,17 @@
+import { Level } from './level.model';
+
 export enum SectorName {
-  INFORMATIQUE = 'INFORMATIQUE',
-  MARKETING = 'MARKETING',
-  DESIGN = 'DESIGN',
-  BUSINESS = 'BUSINESS',
-  COMMUNICATION = 'COMMUNICATION'
+  DEV = 'DEV',
+  DATA = 'DATA',
+  SECURITY = 'SECURITY',
+  GLOBAL_B1 = 'GLOBAL_B1',
+  GLOBAL_B2 = 'GLOBAL_B2'
 }
 
 export interface Sector {
   id: number;
-  name: SectorName;
-  description?: string;
+  name: string;
+  level?: Level;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

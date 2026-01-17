@@ -57,7 +57,7 @@ export const routes: Routes = [
   { 
     path: 'internships/create', 
     component: InternshipFormComponent,
-    canActivate: [authGuard, roleGuard([UserRole.ADMIN, UserRole.STUDENT])]
+    canActivate: [authGuard, roleGuard([UserRole.STUDENT])]
   },
   { 
     path: 'internships/:id', 
@@ -67,7 +67,7 @@ export const routes: Routes = [
   { 
     path: 'internships/:id/edit', 
     component: InternshipFormComponent,
-    canActivate: [authGuard, roleGuard([UserRole.ADMIN, UserRole.TEACHER, UserRole.STUDENT])]
+    canActivate: [authGuard, roleGuard([UserRole.STUDENT])]
   },
   
   // Student routes (Admin and Teacher can view, Admin can create/edit)

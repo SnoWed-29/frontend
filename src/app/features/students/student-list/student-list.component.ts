@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
@@ -17,16 +17,24 @@ import { AuthService } from '../../../core/services/auth.service';
     <app-navbar></app-navbar>
     <div class="container">
       <div class="header">
-        <h1>Students</h1>
-        <app-button variant="primary" (click)="createStudent()">
-          + New Student
+        <div class="header-content">
+          <h1>🎓 Students</h1>
+          <p class="subtitle">Manage student records and profiles</p>
+        </div>
+        <app-button *ngIf="canCreate" variant="primary" (click)="createStudent()">
+          ➕ New Student
         </app-button>
       </div>
 
-      <div *ngIf="loading" class="loading">Loading students...</div>
-      <div *ngIf="error" class="error">{{ error }}</div>
+      <div *ngIf="loading" class="loading">
+        <div class="loading-spinner"></div>
+        <p>Loading students...</p>
+      </div>
+      <div *ngIf="error" class="error">
+        <span>⚠️</span> {{ error }}
+      </div>
 
-      <app-card *ngIf="!loading && !error">
+      <app-card *ngIf="!loading && !error" title="Student Records" icon="🎓">
         <app-table
           [columns]="columns"
           [data]="displayData"
@@ -39,40 +47,78 @@ import { AuthService } from '../../../core/services/auth.service';
   styles: [`
     .container {
       padding: 2rem;
-      max-width: 1400px;
+      max-width: 1500px;
       margin: 0 auto;
+      animation: fadeIn 0.5s ease-out;
     }
+    
     .header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       margin-bottom: 2rem;
+      animation: slideInLeft 0.5s ease-out;
     }
-    h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #111827;
+    
+    .header-content h1 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0 0 0.5rem 0;
+    }
+    
+    .subtitle {
+      color: #64748b;
       margin: 0;
+      font-size: 1rem;
     }
+    
     .loading {
       text-align: center;
-      padding: 2rem;
-      color: #6b7280;
+      padding: 4rem 2rem;
+      color: #64748b;
     }
+    
+    .loading-spinner {
+      width: 3rem;
+      height: 3rem;
+      border: 3px solid #e2e8f0;
+      border-top-color: #6366f1;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    
     .error {
-      padding: 1rem;
-      background-color: #fee2e2;
-      color: #991b1b;
-      border-radius: 0.375rem;
-      margin-bottom: 1rem;
+      padding: 1rem 1.5rem;
+      background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+      color: #dc2626;
+      border-radius: 0.75rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid #fecaca;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
     }
+    
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
   `]
 })
 export class StudentListComponent implements OnInit {
   columns = [
     { key: 'id', label: 'ID' },
-    { key: 'username', label: 'Username' },
-    { key: 'levelName', label: 'Level' }
+    { key: 'firstName', label: 'First Name' },
+    { key: 'lastName', label: 'Last Name' },
+    { key: 'email', label: 'Email' },
+    { key: 'levelName', label: 'Level' },
+    { key: 'sectorName', label: 'Sector' },
+    { key: 'academicYear', label: 'Academic Year' }
   ];
 
   actions = [
@@ -90,7 +136,8 @@ export class StudentListComponent implements OnInit {
   constructor(
     private router: Router,
     private studentService: StudentService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -108,14 +155,20 @@ export class StudentListComponent implements OnInit {
         this.students = students;
         this.displayData = students.map(s => ({
           id: s.id,
-          username: s.user?.username || 'N/A',
-          levelName: s.level?.name || 'N/A'
+          firstName: s.user?.firstName || 'N/A',
+          lastName: s.user?.lastName || 'N/A',
+          email: s.user?.email || 'N/A',
+          levelName: s.level?.name || 'N/A',
+          sectorName: s.sector?.name || 'N/A',
+          academicYear: s.academicYear || 'N/A'
         }));
         this.loading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.error = 'Failed to load students. Please try again.';
         this.loading = false;
+        this.cdr.markForCheck();
         console.error('Error loading students:', err);
       }
     });
@@ -145,9 +198,11 @@ export class StudentListComponent implements OnInit {
       this.studentService.delete(id).subscribe({
         next: () => {
           this.loadStudents();
+          this.cdr.markForCheck();
         },
         error: (err) => {
           this.error = 'Failed to delete student.';
+          this.cdr.markForCheck();
           console.error('Error deleting student:', err);
         }
       });

@@ -31,8 +31,12 @@ export class ReportService {
     return this.http.put<Report>(`${this.API_URL}/${id}`, report);
   }
 
-  grade(id: number, grade: number, feedback?: string): Observable<Report> {
+  gradeReport(id: number, grade: number, feedback?: string): Observable<Report> {
     return this.http.patch<Report>(`${this.API_URL}/${id}/grade`, { grade, feedback });
+  }
+
+  downloadReport(id: number): Observable<Blob> {
+    return this.http.get(`${this.API_URL}/${id}/download`, { responseType: 'blob' });
   }
 
   delete(id: number): Observable<void> {

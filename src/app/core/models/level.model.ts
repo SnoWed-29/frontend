@@ -1,13 +1,14 @@
 export enum LevelName {
-  BAC_1 = 'BAC_1',
-  BAC_2 = 'BAC_2',
-  BAC_3 = 'BAC_3',
-  BAC_4 = 'BAC_4',
-  BAC_5 = 'BAC_5'
+  B1 = 'B1',
+  B2 = 'B2',
+  B3 = 'B3',
+  M1 = 'M1',
+  M2 = 'M2'
 }
 
 export interface Level {
   id: number;
-  name: LevelName;
-  description?: string;
+  name: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

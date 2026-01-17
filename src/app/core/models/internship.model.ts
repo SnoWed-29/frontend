@@ -1,7 +1,10 @@
 import { Student } from './student.model';
 import { Teacher } from './teacher.model';
+import { Level } from './level.model';
+import { Sector } from './sector.model';
 
 export enum InternshipStatus {
+  DRAFT = 'DRAFT',
   PENDING = 'PENDING',
   APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',
@@ -11,14 +14,22 @@ export enum InternshipStatus {
 
 export interface Internship {
   id: number;
-  title: string;
+  subject: string;
+  description?: string;
   company: string;
-  description: string;
+  city: string;
   startDate: Date;
   endDate: Date;
   status: InternshipStatus;
-  student: Student;
-  supervisor?: Teacher;
+  teacherComment?: string;
+  student?: Student;
+  teacher?: Teacher;
+  level?: Level;
+  sector?: Sector;
+  studentId?: number;
+  teacherId?: number;
+  levelId?: number;
+  sectorId?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

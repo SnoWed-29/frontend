@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Internship, InternshipStatus } from '../models';
 
 export interface InternshipSearchCriteria {
   status?: InternshipStatus;
   studentId?: number;
-  supervisorId?: number;
+  teacherId?: number;
+  levelId?: number;
+  sectorId?: number;
   companyName?: string;
+  hasReports?: boolean;
 }
 
 @Injectable({
@@ -27,30 +30,19 @@ export class InternshipService {
   }
 
   search(criteria: InternshipSearchCriteria): Observable<Internship[]> {
-    let params = new HttpParams();
-    
-    if (criteria.status) {
-      params = params.set('status', criteria.status);
-    }
-    if (criteria.studentId) {
-      params = params.set('studentId', criteria.studentId.toString());
-    }
-    if (criteria.supervisorId) {
-      params = params.set('supervisorId', criteria.supervisorId.toString());
-    }
-    if (criteria.companyName) {
-      params = params.set('companyName', criteria.companyName);
-    }
-
-    return this.http.get<Internship[]>(`${this.API_URL}/search`, { params });
+    return this.http.post<Internship[]>(`${this.API_URL}/search`, criteria);
   }
 
   getByStudent(studentId: number): Observable<Internship[]> {
     return this.http.get<Internship[]>(`${this.API_URL}/student/${studentId}`);
   }
 
+  getByTeacher(teacherId: number): Observable<Internship[]> {
+    return this.http.get<Internship[]>(`${this.API_URL}/teacher/${teacherId}`);
+  }
+
   getBySupervisor(supervisorId: number): Observable<Internship[]> {
-    return this.http.get<Internship[]>(`${this.API_URL}/supervisor/${supervisorId}`);
+    return this.http.get<Internship[]>(`${this.API_URL}/teacher/${supervisorId}`);
   }
 
   create(internship: Partial<Internship>): Observable<Internship> {
@@ -62,7 +54,7 @@ export class InternshipService {
   }
 
   updateStatus(id: number, status: InternshipStatus): Observable<Internship> {
-    return this.http.patch<Internship>(`${this.API_URL}/${id}/status`, { status });
+    return this.http.put<Internship>(`${this.API_URL}/${id}`, { status });
   }
 
   delete(id: number): Observable<void> {
